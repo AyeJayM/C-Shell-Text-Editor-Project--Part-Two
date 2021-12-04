@@ -425,13 +425,13 @@ void editorUpdateRow(erow *row) {
         if (row->chars[j] == '\t') tabs++;
 
     free(row->render);
-    row->render = malloc(row->size + tabs*(KILO_TAB_STOP - 1) + 1;
+    row->render = malloc(row->size + tabs*(KILO_TAB_STOP - 1) + 1);
 
     int idx = 0;
     for (j = 0; j < row->size; j++) {
         if (row->chars[j] == '\t') {
             row->render[idx++] = ' ';
-            while (idx % KILO_TAB_STOP != 0) row->render[idx++] = ' '
+            while (idx % KILO_TAB_STOP != 0) row->render[idx++] = ' ';
         }   else {
             row->render[idx++] = row->chars[j];
         }
@@ -481,7 +481,7 @@ void editorDelRow(int at) {
   E.dirty++;
 }
 
-void editorRowInsertChar(erow *row, int at, inc c) {
+void editorRowInsertChar(erow *row, int at, int c) {
     if (at < 0 || at > row->size) at = row->size;
     memmove(&row->chars[at + 1], &row->chars[at], row->size - at + 1);
     row->size++;
@@ -568,7 +568,7 @@ char *editorRowsToString(int *buflen) {
 
 void editorOpen(char *filename) {
     free(E.filename);
-    E.filename = stdrup(filename);
+    E.filename = strdup(filename);
 
     editorSelectSyntaxHighlight();
 
@@ -583,7 +583,7 @@ void editorOpen(char *filename) {
         while (linelen > 0 && (line[linelen - 1] == '\n' ||
                                line[linelen - 1] == '\r'))
             linelen--;
-        editorAppendRow(E.numrows, line, linelen);
+        editorInsertRow(E.numrows, line, linelen);
     }
     free(line);
     fclose(fp);
@@ -979,7 +979,7 @@ void editorProcessKeypress() {
       break;
 
     case CTRL_KEY('f'):
-     editorFInd();
+     editorFind();
      break;
 
     case BACKSPACE:
